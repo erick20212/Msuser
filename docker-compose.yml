@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  flask-user:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flask_user
+    restart: always
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=Host(`localhost`) && (PathPrefix(`/users`) || PathPrefix(`/roles`) || PathPrefix(`/permissions`) || PathPrefix(`/auth`))"
+      - "traefik.http.routers.user.entrypoints=web"
+      - "traefik.http.services.user.loadbalancer.server.port=5000"
+    depends_on:
+      - db
+    networks:
+      - traefik_net
+
+  db:
+    image: postgres:15
+    container_name: postgres_db_user
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data_user:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # 👉 Para conectarte desde DBeaver
+    networks:
+      - traefik_net
+
+volumes:
+  postgres_data_user:
+
+networks:
+  traefik_net:
+    external: true
