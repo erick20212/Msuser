@@ -6,7 +6,7 @@ from src.db import db
 from src.config.config import Config
 from src.controller.user_controller import user_bp
 from src.controller.auth_controller import auth_bp
-
+from flask_cors import CORS
 
 
 
@@ -15,6 +15,10 @@ import src.models
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config())
+
+    # 🛡️ Habilita CORS
+    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
     db.init_app(app)
 
     with app.app_context():

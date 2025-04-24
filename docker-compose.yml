@@ -9,9 +9,11 @@ services:
     restart: always
     env_file:
       - .env
+    ports:
+      - "5002:5000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.user.rule=Host(`localhost`) && (PathPrefix(`/users`) || PathPrefix(`/roles`) || PathPrefix(`/permissions`) || PathPrefix(`/auth`))"
+      - "traefik.http.routers.user.rule=PathPrefix(`/users`) || PathPrefix(`/roles`) || PathPrefix(`/permissions`) || PathPrefix(`/auth`)"
       - "traefik.http.routers.user.entrypoints=web"
       - "traefik.http.services.user.loadbalancer.server.port=5000"
     depends_on:
